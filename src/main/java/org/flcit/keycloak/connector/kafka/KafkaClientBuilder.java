@@ -32,7 +32,7 @@ import org.apache.kafka.common.config.SaslConfigs;
 import org.apache.kafka.common.serialization.Serializer;
 import org.apache.kafka.common.serialization.StringSerializer;
 import org.keycloak.Config.Scope;
-
+import org.flcit.commons.core.util.CollectionUtils;
 import org.flcit.commons.core.util.ObjectUtils;
 import org.flcit.commons.core.util.PropertyUtils;
 import org.flcit.commons.core.util.StringUtils;
@@ -43,6 +43,28 @@ public final class KafkaClientBuilder {
     private static final String ACKS_DEFAULT = "1";
 
     private KafkaClientBuilder() { }
+
+    /**
+     * @param properties
+     * @param prefix
+     * @return
+     */
+    public static boolean hasBootstrapServers(Properties properties, String prefix) {
+        return hasBootstrapServers(PropertyUtils.getStringList(properties, prefix + CommonClientConfigs.BOOTSTRAP_SERVERS_CONFIG));
+    }
+
+    /**
+     * @param config
+     * @param prefix
+     * @return
+     */
+    public static boolean hasBootstrapServers(Scope config, String prefix) {
+        return hasBootstrapServers(PropertyUtils.toList(config.get(prefix + CommonClientConfigs.BOOTSTRAP_SERVERS_CONFIG)));
+    }
+
+    private static boolean hasBootstrapServers(List<String> bootstrapServer) {
+        return !CollectionUtils.isEmpty(bootstrapServer);
+    }
 
     public static KafkaProducer<String, Object> buildProducer(Properties properties, String prefix) {
         ProducerConfig.main(getCommonConfig());
